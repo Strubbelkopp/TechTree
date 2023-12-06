@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <ResearchTabDef>
+        <defName>Undefined</defName>
+        <label>Undefined</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Animal</defName>
+        <label>Animal</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Neolithic</defName>
+        <label>Neolithic</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Medieval</defName>
+        <label>Medieval</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Industrial</defName>
+        <label>Industrial</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Spacer</defName>
+        <label>Spacer</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Ultra</defName>
+        <label>Ultra</label>
+    </ResearchTabDef>
+
+    <ResearchTabDef>
+        <defName>Archotech</defName>
+        <label>Archotech</label>
+    </ResearchTabDef>
+</Defs>
