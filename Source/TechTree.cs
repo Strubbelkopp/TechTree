@@ -1,34 +1,57 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using System.Collections.Generic;
+using System.Reflection;
 using Verse;
 
 namespace TechTree {
     [StaticConstructorOnStartup]
     public static class TechTree {
+        private static Dictionary<ResearchTabDef, List<ResearchProjectDef>> projectsByTabs;
+
         static TechTree() {
-            List<ResearchProjectDef> researchProjects = DefDatabase<ResearchProjectDef>.AllDefsListForReading;
-            researchProjects.ForEach(researchProjectDef => {
-                TechLevel techLevel = researchProjectDef.techLevel;
+            projectsByTabs = ModifyResearchTabs();
+
+            foreach (var tab in projectsByTabs) {
+                ResearchGraph graph = new(tab.Value);
+                graph.Print(tab.Key.defName);
+            }
+
+            var harmony = new Harmony("dev.strubbelkopp.tech_tree");
+            var assembly = Assembly.GetExecutingAssembly();
+            harmony.PatchAll(assembly);
+        }
+
+        public static Dictionary<ResearchTabDef, List<ResearchProjectDef>> ModifyResearchTabs() {
+            Dictionary<ResearchTabDef, List<ResearchProjectDef>> projectsByTabs = [];
+
+            DefDatabase<ResearchProjectDef>.AllDefsListForReading.ForEach(researchProject => {
+                TechLevel techLevel = researchProject.techLevel;
                 ResearchTabDef newTab = techLevel switch {
-                    TechLevel.Animal => ResearchTabDefOf.Animal,
-                    TechLevel.Neolithic => ResearchTabDefOf.Neolithic,
-                    TechLevel.Medieval => ResearchTabDefOf.Medieval,
-                    TechLevel.Industrial => ResearchTabDefOf.Industrial,
-                    TechLevel.Spacer => ResearchTabDefOf.Spacer,
-                    TechLevel.Ultra => ResearchTabDefOf.Ultra,
-                    TechLevel.Archotech => ResearchTabDefOf.Archotech,
-                    _ => ResearchTabDefOf.Undefined
+                    TechLevel.Animal => ModResearchTabDefOf.Animal,
+                    TechLevel.Neolithic => ModResearchTabDefOf.Neolithic,
+                    TechLevel.Medieval => ModResearchTabDefOf.Medieval,
+                    TechLevel.Industrial => ModResearchTabDefOf.Industrial,
+                    TechLevel.Spacer => ModResearchTabDefOf.Spacer,
+                    TechLevel.Ultra => ModResearchTabDefOf.Ultra,
+                    TechLevel.Archotech => ModResearchTabDefOf.Archotech,
+                    _ => ModResearchTabDefOf.Undefined
                 };
-                researchProjectDef.tab = newTab;
+                researchProject.tab = newTab;
+
+                if (projectsByTabs.TryGetValue(newTab, out List<ResearchProjectDef> researchProjects)) {
+                    researchProjects.Add(researchProject);
+                    projectsByTabs[newTab] = researchProjects;
+                } else {
+                    projectsByTabs.Add(newTab, [researchProject]);
+                }
             });
 
-            //List<ResearchTabDef> populatedTabs = [];
-            //DefDatabase<ResearchProjectDef>.AllDefsListForReading.ForEach(researchProjectDef => {
-            //    ResearchTabDef tab = researchProjectDef.tab;
-            //    if (!populatedTabs.Contains(tab)) {
-            //        populatedTabs.Add(tab);
-            //    }
-            //});
+            return projectsByTabs;
+        }
+
+        public static List<ResearchTabDef> GetPopulatedResearchTabs() {
+            return new List<ResearchTabDef>(projectsByTabs.Keys);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace TechTree {
     [DefOf]
-    public static class ResearchTabDefOf {
+    public static class ModResearchTabDefOf {
         public static ResearchTabDef Undefined;
         public static ResearchTabDef Animal;
         public static ResearchTabDef Neolithic;
